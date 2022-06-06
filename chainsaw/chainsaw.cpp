@@ -3,10 +3,10 @@
 #include<iostream>
 #include<cmath>
 #include<cstdlib>
+
 using namespace std;
-const int NUM_SAMPLES = 48000;
 const int NUM_KNOBS = 3;
-const int NUM_TEXTURES = 8;
+const int NUM_TEXTURES = 9;
 enum waveEnum { sine, saw, triangle, square };
 struct Drawings
 {
@@ -20,8 +20,15 @@ struct Drawings
 	sf::Sprite wave[4];
 	sf::RectangleShape waveBackground[4];
 	sf::Text cKey[4];
+	sf::RectangleShape cKeyBoarder;
+	sf::Text cKeyBoarderText;
 	sf::Text midiText;
 	sf::CircleShape midiSignal;
+	sf::RectangleShape midiBoarder;
+	sf::Text midiBoarderText;
+	sf::Text octaveValues[6];
+	sf::Text volumeValues[11];
+	sf::Text rampValues[6];
 };
 
 void MapMidiKeysToRect();
@@ -33,14 +40,15 @@ void GenerateKeyboardKeys(vector<sf::RectangleShape>& rectangles, sf::RenderWind
 void UpdateValuesFromKnob(int index, int value, sf::Sprite knob[], Midi& midi);
 void LoadTextures(Drawings& drawings, sf::Font& font);
 void DrawSprites(sf::RenderWindow& window, Drawings& drawings);
-
 bool UpdateOctave(int amount);
 bool UpdateVolume(int amount);
 bool UpdateRamp(int value);
+
 Midi midi;
 Drawings drawings;
 vector<sf::RectangleShape> rectangles;
 waveEnum waveType;
+
 int main()
 {
 	sf::Font font;
@@ -49,11 +57,12 @@ int main()
 	GenerateKeyboardKeys(rectangles, window);
 	MapMidiKeysToRect();
 	LoadTextures(drawings, font);
-
+	IsMidiConnected(true);
 	while (window.isOpen())
 	{
 		sf::Event event;
 		window.setSize(sf::Vector2u(590, 320));
+
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
@@ -104,34 +113,37 @@ bool ClickedKey(vector<sf::RectangleShape>& rectangles, sf::Event& event)
 			cout << "Playing midi note: " << midi.midiRectValues.at(i) << endl;
 			//rectangles[i].setFillColor(sf::Color(255, 165, 0));
 
-			HighlightKey(midi.midiRectValues.at(i), true);
+			//HighlightKey(midi.midiRectValues.at(i), true);
 			float freq = 440 * static_cast<float>(pow(2.0, ((static_cast<float>(midi.midiRectValues.at(i) - 69) / 12))));
-			switch (waveType)
-			{
-				case sine:
-				{
-					Synth::sine(freq, false);
-					break;
-				}
-				case saw:
-				{
-					Synth::saw(freq, false);
-					break;
-				}
-				case triangle:
-				{
-					Synth::triangle(freq, false);
-					break;
-				}
-				case square:
-				{
-					Synth::square(freq, false);
-					break;
-				}
-				default:
-					break;
-			}
+			//HighlightKey(midi.midiRectValues.at(i), true);
 			
+				switch (waveType)
+				{
+					sf::sleep(sf::milliseconds(10));
+					case sine:
+					{
+						Synth::sine(freq, false,midi);
+						break;
+					}
+					case saw:
+					{
+						Synth::saw(freq, false, midi);
+						break;
+					}
+					case triangle:
+					{
+						Synth::triangle(freq, false, midi);
+						break;
+					}
+					case square:
+					{
+						Synth::square(freq, false, midi);
+						break;
+					}
+					default:
+						break;
+				}
+				//HighlightKey(midi.midiRectValues.at(i), true);
 			return true;
 		}
 	}
@@ -176,7 +188,7 @@ bool ClickedWaveType(sf::RectangleShape wave[], sf::Event& event)
 		if (wave[i].getGlobalBounds().contains(mousePos))
 		{
 			cout << "Clicked wave " << i << endl;
-				waveType = waveEnum(i);
+			waveType = waveEnum(i);
 			if (waveType == 0)
 				cout << "Changed to sinewave\n";
 			else if (waveType == 1)
@@ -187,13 +199,13 @@ bool ClickedWaveType(sf::RectangleShape wave[], sf::Event& event)
 				cout << "changed to squre wave\n";
 			else
 				cout << "ERROR: did not properly set wave type\n";
-			wave[i].setFillColor(sf::Color::Red);
+			wave[i].setFillColor(sf::Color(222, 116, 44));
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
 				for (int j = 0; j < 4; j++)
 				{
 					if (i != j)
-						wave[j].setFillColor(sf::Color::Green);
+						wave[j].setFillColor(sf::Color::White);
 				}
 			}
 			else
@@ -215,7 +227,7 @@ void UpdateValuesFromKnob(int index, int value, sf::Sprite knob[], Midi& midi)
 		{
 			cout << "Updating octave and rotating knob!\n";
 
-			knob[0].rotate(10.0f * value);
+			knob[0].rotate(50.0f * value);
 		}
 		else
 			cout << "Did not update or rotate octave knob\n";
@@ -226,7 +238,7 @@ void UpdateValuesFromKnob(int index, int value, sf::Sprite knob[], Midi& midi)
 		if (UpdateVolume(value))
 		{
 			cout << "Updating volume and rotating knob!\n";
-			knob[1].rotate(10.0f * value);
+			knob[1].rotate(25.0f * value);
 		}
 		else
 			cout << "Did not update or rotate volume knob\n";
@@ -237,7 +249,7 @@ void UpdateValuesFromKnob(int index, int value, sf::Sprite knob[], Midi& midi)
 		if (UpdateRamp(value))
 		{
 			cout << "Updating ramp and rotating knob!\n";
-			knob[2].rotate(10.0f * value);
+			knob[2].rotate(50.0f * value);
 		}
 		else
 			cout << "Did not update or rotate ramp knob\n";
@@ -293,34 +305,16 @@ void GenerateKeyboardKeys(vector<sf::RectangleShape>& rectangles, sf::RenderWind
 
 void IsMidiConnected(bool connected)
 {
-	if (connected)
-		drawings.midiSignal.setFillColor(sf::Color::Black);
+	if (!connected)
+	{
+		drawings.midiSignal.setFillColor(sf::Color::Red);
+		drawings.midiText.setString("NO MIDI");
+	}
 	else
-		drawings.midiSignal.setFillColor(sf::Color(255, 165, 0));
-}
-
-//draws all the drawings onto the window
-void DrawSprites(sf::RenderWindow& window, Drawings& drawings)
-{
-	window.draw(drawings.background);
-	window.draw(drawings.logo);
-	window.draw(drawings.nameBar);
-	window.draw(drawings.chainsawLogo);
-	window.draw(drawings.midiSignal);
-	window.draw(drawings.midiText);
-	for (int i = 0; i < NUM_KNOBS; i++)
-		window.draw(drawings.knob[i]);
-	for (int i = 0; i < NUM_KNOBS; i++)
-		window.draw(drawings.text[i]);
-	for (int i = 0; i < 4; i++)
-		window.draw(drawings.waveBackground[i]);
-	for (int i = 0; i < 4; i++)
-		window.draw(drawings.wave[i]);
-	for (int i = 0; i < NUM_KEYS; i++)
-		window.draw(rectangles[i]);
-
-	for (int i = 0; i < 4; i++)
-		window.draw(drawings.cKey[i]);
+	{
+		drawings.midiSignal.setFillColor(sf::Color::Green);
+		drawings.midiText.setString("MIDI CONNECTED");
+	}
 }
 
 void HighlightKey(int midiKey, bool highlight)
@@ -333,7 +327,7 @@ void HighlightKey(int midiKey, bool highlight)
 			cout << "Rectangle " << i << " has midi key" << midiKey << "\n";
 			found = true;
 			if (highlight)
-				rectangles[i].setFillColor(sf::Color(255, 165, 0));
+				rectangles[i].setFillColor(sf::Color(222, 116, 44));
 			else
 			{
 				if (i < 21)
@@ -375,6 +369,7 @@ bool UpdateOctave(int amount)
 	return true;
 }
 
+//update the midi volume
 bool UpdateVolume(int amount)
 {
 	if ((amount < 0 && midi.volume == 0) || (amount > 0 && midi.volume == 10))
@@ -390,7 +385,6 @@ bool UpdateVolume(int amount)
 
 	midi.volume += amount;
 
-	
 	cout << "Volume is now: " << midi.volume << "\n";
 	return true;
 }
@@ -415,6 +409,8 @@ bool UpdateRamp(int amount)
 		val = -.1f;
 		cout << "Rotating left\n";
 	}
+	if (midi.ramp < 0.0)
+		midi.ramp = 0.0f;
 	midi.ramp += val;
 	cout << "ramp is now: " << midi.ramp << "\n";
 
@@ -470,6 +466,33 @@ void MapMidiKeysToRect()
 	midi.midiRectValues.push_back(startingMidi + 34);//37
 }
 
+//draws all the drawings onto the window
+void DrawSprites(sf::RenderWindow& window, Drawings& drawings)
+{
+	window.draw(drawings.background);
+	window.draw(drawings.logo);
+	window.draw(drawings.nameBar);
+	window.draw(drawings.chainsawLogo);
+	window.draw(drawings.midiBoarder);
+	window.draw(drawings.midiSignal);
+	window.draw(drawings.midiText);
+	window.draw(drawings.midiBoarderText);
+	window.draw(drawings.cKeyBoarder);
+	window.draw(drawings.cKeyBoarderText);
+
+	for (int i = 0; i < NUM_KNOBS; i++)
+		window.draw(drawings.knob[i]);
+	for (int i = 0; i < NUM_KNOBS; i++)
+		window.draw(drawings.text[i]);
+	for (int i = 0; i < 4; i++)
+		window.draw(drawings.waveBackground[i]);
+	for (int i = 0; i < 4; i++)
+		window.draw(drawings.wave[i]);
+	for (int i = 0; i < NUM_KEYS; i++)
+		window.draw(rectangles[i]);
+	for (int i = 0; i < 4; i++)
+		window.draw(drawings.cKey[i]);
+}
 
 void LoadTextures(Drawings& drawings, sf::Font& font)
 {
@@ -481,15 +504,18 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 
 	drawings.texture[1].loadFromFile("Resources/Images/chainsawlogo.png", sf::IntRect(0, 0, 267, 65));
 	drawings.logo.setTexture(drawings.texture[1]);
-	drawings.logo.setPosition(160, 80);
+	drawings.logo.setPosition(160, 100);
 
 	drawings.texture[2].loadFromFile("Resources/Images/AudioKnob.png", sf::IntRect(0, 0, 59, 65));
-	drawings.knob[0].setTexture(drawings.texture[2]);
+	drawings.texture[8].loadFromFile("Resources/Images/AudioKnob1.png", sf::IntRect(0, 0, 44, 49));
+	drawings.knob[0].setTexture(drawings.texture[8]);
 	drawings.knob[0].setPosition(80, 120);
-	drawings.knob[1].setTexture(drawings.texture[2]);
+	drawings.knob[0].setRotation(-125.0f);
+	drawings.knob[1].setTexture(drawings.texture[8]);
 	drawings.knob[1].setPosition(80, 40);
 	drawings.knob[2].setTexture(drawings.texture[2]);
-	drawings.knob[2].setPosition(510, 120);
+	drawings.knob[2].setPosition(510, 80);
+	drawings.knob[2].setRotation(-125.0f);
 
 	drawings.texture[3].loadFromFile("Resources/Images/chainsawText.png", sf::IntRect(0, 0, 265, 37));
 	drawings.chainsawLogo.setTexture(drawings.texture[3]);
@@ -497,42 +523,51 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 
 	drawings.texture[4].loadFromFile("Resources/Images/sineWave.png", sf::IntRect(0, 0, 60, 60));
 	drawings.wave[0].setTexture(drawings.texture[4]);
-	drawings.wave[0].setPosition(195, 0);
+	drawings.wave[0].setPosition(195, 15);
 
 	drawings.texture[5].loadFromFile("Resources/Images/sawWave.png", sf::IntRect(0, 0, 60, 60));
 	drawings.wave[1].setTexture(drawings.texture[5]);
-	drawings.wave[1].setPosition(245, -10);
+	drawings.wave[1].setPosition(245, 2);
 
 	drawings.texture[6].loadFromFile("Resources/Images/triangleWave.png", sf::IntRect(0, 0, 60, 60));
 	drawings.wave[2].setTexture(drawings.texture[6]);
-	drawings.wave[2].setPosition(295, 0);
+	drawings.wave[2].setPosition(295, 12);
 
 	drawings.texture[7].loadFromFile("Resources/Images/squareWave.png", sf::IntRect(0, 0, 60, 60));
 	drawings.wave[3].setTexture(drawings.texture[7]);
-	drawings.wave[3].setPosition(345, 2);
+	drawings.wave[3].setPosition(345, 15);
 
-	//set wave[0] color to cyan since it is the default wave to be generated
-	drawings.wave[0].setColor(sf::Color::Black);
+
 	for (int i = 1; i < 4; i++)
 		drawings.wave[i].setColor(sf::Color::Black);
 
-
-	drawings.waveBackground[0].setPosition(200, 5);
+	drawings.waveBackground[0].setPosition(200, 15);
 	drawings.waveBackground[0].setSize(sf::Vector2f(45, 40));
-	drawings.waveBackground[0].setFillColor(sf::Color::Red);
+	drawings.waveBackground[0].setFillColor(sf::Color(222, 116, 44));
 
-	drawings.waveBackground[1].setPosition(250, 5);
+	drawings.waveBackground[1].setPosition(250, 15);
 	drawings.waveBackground[1].setSize(sf::Vector2f(45, 40));
-	drawings.waveBackground[1].setFillColor(sf::Color::Green);
+	drawings.waveBackground[1].setFillColor(sf::Color::White);
 
-	drawings.waveBackground[2].setPosition(300, 5);
+	drawings.waveBackground[2].setPosition(300, 15);
 	drawings.waveBackground[2].setSize(sf::Vector2f(45, 40));
-	drawings.waveBackground[2].setFillColor(sf::Color::Green);
+	drawings.waveBackground[2].setFillColor(sf::Color::White);
 
-	drawings.waveBackground[3].setPosition(350, 5);
+	drawings.waveBackground[3].setPosition(350, 15);
 	drawings.waveBackground[3].setSize(sf::Vector2f(45, 40));
-	drawings.waveBackground[3].setFillColor(sf::Color::Green);
+	drawings.waveBackground[3].setFillColor(sf::Color::White);
 
+	drawings.cKeyBoarder.setPosition(195, 10);
+	drawings.cKeyBoarder.setOutlineColor(sf::Color(222, 116, 44));
+	drawings.cKeyBoarder.setOutlineThickness(1);
+	drawings.cKeyBoarder.setSize(sf::Vector2f(205.0f, 75.0f));
+	drawings.cKeyBoarder.setFillColor(sf::Color::Black);
+
+	drawings.cKeyBoarderText.setString("WAVEFORM");
+	drawings.cKeyBoarderText.setPosition(260, 65);
+	drawings.cKeyBoarderText.setFont(font);
+	drawings.cKeyBoarderText.setFillColor(sf::Color::White);
+	drawings.cKeyBoarderText.setCharacterSize(12);
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -541,16 +576,16 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 		drawings.cKey[i].setCharacterSize(12);
 	}
 
-	drawings.cKey[0].setString("C4");
+	drawings.cKey[0].setString("C1");
 	drawings.cKey[0].setPosition(1, 305);
 
-	drawings.cKey[1].setString("C5");
+	drawings.cKey[1].setString("C2");
 	drawings.cKey[1].setPosition(195, 305);
 
-	drawings.cKey[2].setString("C6");
+	drawings.cKey[2].setString("C3");
 	drawings.cKey[2].setPosition(382, 305);
 
-	drawings.cKey[3].setString("C7");
+	drawings.cKey[3].setString("C4");
 	drawings.cKey[3].setPosition(572, 305);
 
 	for (int i = 0; i < NUM_KNOBS; i++)
@@ -560,30 +595,26 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 		drawings.text[i].setCharacterSize(12);
 	}
 
-	drawings.text[0].setString("Octave");
+	drawings.text[0].setString("OCTAVE");
 	drawings.text[0].setPosition(55, 150);
 
-	drawings.text[1].setString("Volume");
-	drawings.text[1].setPosition(55, 70);
+	drawings.text[1].setString("GAIN");
+	drawings.text[1].setPosition(65, 70);
 
-	drawings.text[2].setString("Ramp");
-	drawings.text[2].setPosition(495, 150);
+	drawings.text[2].setString("RAMP");
+	drawings.text[2].setPosition(495, 120);
 
-
-	//drawings.midiSignal.setFillColor(sf::Color(255, 165, 0));
-	drawings.midiSignal.setFillColor(sf::Color::Black);
+	drawings.midiSignal.setFillColor(sf::Color::Red);
 	drawings.midiSignal.setRadius(5);
+	drawings.midiSignal.setPosition(430, 13);
 
-	//590 320
-	drawings.midiSignal.setPosition(450, 13);
-	//drawings.midiText.setString("MIDI Connected");
-	drawings.midiText.setString("No Signal");
-	drawings.midiText.setPosition(470, 10);
+	drawings.midiText.setString("MIDI DISCONNECTED");
+	drawings.midiText.setPosition(450, 10);
 	drawings.midiText.setFont(font);
 	drawings.midiText.setFillColor(sf::Color::White);
 	drawings.midiText.setCharacterSize(12);
 
 	//set the origin of each knob to the center so rotation can properly occur
 	for (int i = 0; i < NUM_KNOBS; i++)
-		drawings.knob[i].setOrigin(sf::Vector2f(drawings.knob[0].getLocalBounds().width / 2, drawings.knob[0].getLocalBounds().height / 2));
+		drawings.knob[i].setOrigin(sf::Vector2f(drawings.knob[i].getLocalBounds().width / 2, drawings.knob[i].getLocalBounds().height / 2));
 }
