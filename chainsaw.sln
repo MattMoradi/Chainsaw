@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "chainsaw", "chainsaw\chainsaw.vcxproj", "{ABB76D6C-0C49-4E70-9844-A39AC3A678B1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ABB76D6C-0C49-4E70-9844-A39AC3A678B1}.Debug|x64.ActiveCfg = Debug|x64
+		{ABB76D6C-0C49-4E70-9844-A39AC3A678B1}.Debug|x64.Build.0 = Debug|x64
+		{ABB76D6C-0C49-4E70-9844-A39AC3A678B1}.Debug|x86.ActiveCfg = Debug|Win32
+		{ABB76D6C-0C49-4E70-9844-A39AC3A678B1}.Debug|x86.Build.0 = Debug|Win32
+		{ABB76D6C-0C49-4E70-9844-A39AC3A678B1}.Release|x64.ActiveCfg = Release|x64
+		{ABB76D6C-0C49-4E70-9844-A39AC3A678B1}.Release|x64.Build.0 = Release|x64
+		{ABB76D6C-0C49-4E70-9844-A39AC3A678B1}.Release|x86.ActiveCfg = Release|Win32
+		{ABB76D6C-0C49-4E70-9844-A39AC3A678B1}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A575CBC1-98C1-4A01-BBA8-9D54CEA587A3}
+	EndGlobalSection
+EndGlobal
