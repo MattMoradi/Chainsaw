@@ -45,7 +45,7 @@ int main()
 {
 	sf::Font font;
 	sf::RenderWindow window(sf::VideoMode(590, 320), "Chainsaw Demo v1.0");
-	font.loadFromFile("Resources/Font/Arial.ttf");
+	font.loadFromFile("Resources/Fonts/Arial.ttf");
 	GenerateKeyboardKeys(rectangles, window);
 	MapMidiKeysToRect();
 	LoadTextures(drawings, font);
