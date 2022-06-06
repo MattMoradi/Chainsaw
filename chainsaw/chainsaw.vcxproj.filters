@@ -21,7 +21,7 @@
     <ClCompile Include="Synth.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RtMidi.cpp">
+    <ClCompile Include="..\..\..\..\Desktop\RtMidi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,7 +29,7 @@
     <ClInclude Include="Synth.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RtMidi.h">
+    <ClInclude Include="..\include\RtMidi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

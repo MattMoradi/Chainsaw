@@ -152,12 +152,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\Desktop\RtMidi.cpp" />
     <ClCompile Include="chainsaw.cpp" />
-    <ClCompile Include="RtMidi.cpp" />
     <ClCompile Include="Synth.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RtMidi.h" />
+    <ClInclude Include="..\include\RtMidi.h" />
     <ClInclude Include="Synth.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
