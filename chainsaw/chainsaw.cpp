@@ -6,8 +6,8 @@
 
 using namespace std;
 const int NUM_KNOBS = 3;
-const int NUM_TEXTURES = 9;
-enum waveEnum { sine, saw, triangle, square };
+const int NUM_TEXTURES = 10;
+enum waveEnum { sine, saw, triangle, square, whiteNoise };
 struct Drawings
 {
 	sf::Texture texture[NUM_TEXTURES];
@@ -17,8 +17,8 @@ struct Drawings
 	sf::Text text[NUM_KNOBS];
 	sf::RectangleShape nameBar;
 	sf::Sprite chainsawLogo;
-	sf::Sprite wave[4];
-	sf::RectangleShape waveBackground[4];
+	sf::Sprite wave[5];
+	sf::RectangleShape waveBackground[5];
 	sf::Text cKey[4];
 	sf::RectangleShape cKeyBoarder;
 	sf::Text cKeyBoarderText;
@@ -140,6 +140,12 @@ bool ClickedKey(vector<sf::RectangleShape>& rectangles, sf::Event& event)
 						Synth::square(freq, false, midi);
 						break;
 					}
+					case whiteNoise:
+					{
+						cout << "white noise not implemented!\n";
+						//Synth::whiteNoise(freq,false,midi);
+						break;
+					}
 					default:
 						break;
 				}
@@ -183,7 +189,7 @@ bool ClickedWaveType(sf::RectangleShape wave[], sf::Event& event)
 	int mx = event.mouseButton.x;
 	int my = event.mouseButton.y;
 	sf::Vector2f mousePos(mx, my);
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		if (wave[i].getGlobalBounds().contains(mousePos))
 		{
@@ -197,12 +203,14 @@ bool ClickedWaveType(sf::RectangleShape wave[], sf::Event& event)
 				cout << "changed to triangle wave\n";
 			else if (waveType == 3)
 				cout << "changed to squre wave\n";
+			else if (waveType == 4)
+				cout << "changed to white noise wave\n";
 			else
 				cout << "ERROR: did not properly set wave type\n";
 			wave[i].setFillColor(sf::Color(222, 116, 44));
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
-				for (int j = 0; j < 4; j++)
+				for (int j = 0; j < 5; j++)
 				{
 					if (i != j)
 						wave[j].setFillColor(sf::Color::White);
@@ -484,9 +492,9 @@ void DrawSprites(sf::RenderWindow& window, Drawings& drawings)
 		window.draw(drawings.knob[i]);
 	for (int i = 0; i < NUM_KNOBS; i++)
 		window.draw(drawings.text[i]);
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 5; i++)
 		window.draw(drawings.waveBackground[i]);
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 5; i++)
 		window.draw(drawings.wave[i]);
 	for (int i = 0; i < NUM_KEYS; i++)
 		window.draw(rectangles[i]);
@@ -523,44 +531,56 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 
 	drawings.texture[4].loadFromFile("Resources/Images/sineWave.png", sf::IntRect(0, 0, 60, 60));
 	drawings.wave[0].setTexture(drawings.texture[4]);
-	drawings.wave[0].setPosition(195, 15);
+	drawings.wave[0].setPosition(170, 15);
 
 	drawings.texture[5].loadFromFile("Resources/Images/sawWave.png", sf::IntRect(0, 0, 60, 60));
 	drawings.wave[1].setTexture(drawings.texture[5]);
-	drawings.wave[1].setPosition(245, 2);
+	drawings.wave[1].setPosition(220, 2);
 
 	drawings.texture[6].loadFromFile("Resources/Images/triangleWave.png", sf::IntRect(0, 0, 60, 60));
 	drawings.wave[2].setTexture(drawings.texture[6]);
-	drawings.wave[2].setPosition(295, 12);
+	drawings.wave[2].setPosition(270, 12);
 
-	drawings.texture[7].loadFromFile("Resources/Images/squareWave.png", sf::IntRect(0, 0, 60, 60));
+
+	drawings.texture[7].loadFromFile("Resources/Images/squareWave.png", sf::IntRect(0, 0, 42, 36));
 	drawings.wave[3].setTexture(drawings.texture[7]);
-	drawings.wave[3].setPosition(345, 15);
+	drawings.wave[3].setPosition(328, 17);
+
+	drawings.texture[9].loadFromFile("Resources/Images/whtieNoiseWave1.png", sf::IntRect(0, 0, 43, 40));
+	drawings.wave[4].setTexture(drawings.texture[9]);
+	drawings.wave[4].setPosition(375, 15);
 
 
-	for (int i = 1; i < 4; i++)
+	for (int i = 1; i < 5; i++)
 		drawings.wave[i].setColor(sf::Color::Black);
 
-	drawings.waveBackground[0].setPosition(200, 15);
+	drawings.waveBackground[0].setPosition(175, 15);
 	drawings.waveBackground[0].setSize(sf::Vector2f(45, 40));
 	drawings.waveBackground[0].setFillColor(sf::Color(222, 116, 44));
 
-	drawings.waveBackground[1].setPosition(250, 15);
+	drawings.waveBackground[1].setPosition(225, 15);
 	drawings.waveBackground[1].setSize(sf::Vector2f(45, 40));
 	drawings.waveBackground[1].setFillColor(sf::Color::White);
 
-	drawings.waveBackground[2].setPosition(300, 15);
+	drawings.waveBackground[2].setPosition(275, 15);
 	drawings.waveBackground[2].setSize(sf::Vector2f(45, 40));
 	drawings.waveBackground[2].setFillColor(sf::Color::White);
 
-	drawings.waveBackground[3].setPosition(350, 15);
+	drawings.waveBackground[3].setPosition(325, 15);
 	drawings.waveBackground[3].setSize(sf::Vector2f(45, 40));
 	drawings.waveBackground[3].setFillColor(sf::Color::White);
 
-	drawings.cKeyBoarder.setPosition(195, 10);
+	drawings.waveBackground[4].setPosition(375, 15);
+	drawings.waveBackground[4].setSize(sf::Vector2f(45, 40));
+	drawings.waveBackground[4].setFillColor(sf::Color::White);
+
+
+
+
+	drawings.cKeyBoarder.setPosition(170, 10);
 	drawings.cKeyBoarder.setOutlineColor(sf::Color(222, 116, 44));
 	drawings.cKeyBoarder.setOutlineThickness(1);
-	drawings.cKeyBoarder.setSize(sf::Vector2f(205.0f, 75.0f));
+	drawings.cKeyBoarder.setSize(sf::Vector2f(255.0f, 75.0f));
 	drawings.cKeyBoarder.setFillColor(sf::Color::Black);
 
 	drawings.cKeyBoarderText.setString("WAVEFORM");
@@ -606,10 +626,10 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 
 	drawings.midiSignal.setFillColor(sf::Color::Red);
 	drawings.midiSignal.setRadius(5);
-	drawings.midiSignal.setPosition(430, 13);
+	drawings.midiSignal.setPosition(440, 13);
 
 	drawings.midiText.setString("MIDI DISCONNECTED");
-	drawings.midiText.setPosition(450, 10);
+	drawings.midiText.setPosition(460, 10);
 	drawings.midiText.setFont(font);
 	drawings.midiText.setFillColor(sf::Color::White);
 	drawings.midiText.setCharacterSize(12);
