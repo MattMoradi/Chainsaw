@@ -21,9 +21,6 @@
     <ClCompile Include="..\..\..\..\Downloads\rtmidi-5.0.0\RtMidi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MIDI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Synth.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -32,7 +29,7 @@
     <ClInclude Include="..\include\RtMidi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="header.h">
+    <ClInclude Include="Synth.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

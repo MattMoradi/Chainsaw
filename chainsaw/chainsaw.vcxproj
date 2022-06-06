@@ -154,12 +154,11 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\Downloads\rtmidi-5.0.0\RtMidi.cpp" />
     <ClCompile Include="chainsaw.cpp" />
-    <ClCompile Include="MIDI.cpp" />
     <ClCompile Include="Synth.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\RtMidi.h" />
-    <ClInclude Include="header.h" />
+    <ClInclude Include="Synth.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

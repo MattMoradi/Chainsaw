@@ -1,49 +1,56 @@
-#include "header.h"
-#include <signal.h>
+#include "Synth.h"
+#include "RtMidi.h"
 #include <cstdlib>
-#include<Windows.h>
-//#include "RtMidi.h"
-//#include <SFML/Audio.hpp>
-#include <signal.h>
+//#include<Windows.h>
+#include <SFML/Audio.hpp>
 
 const int SAMPLE_RATE = 48000;
 const short CHANNELS = 1;
 
-//int root = 48;
-//int beats = 8;
-//double bpm = 90.0;
 double ramp = 0.5;
 double accent = 5.0;
 double volume = 8.0;
 
-double decay = 0.0;
 sf::Sound sound;
 
-// MIDI Testing
-int status;
-int nBytes;
-RtMidiIn* midiin;
+// MIDI
+RtMidiIn* inputMIDI;
 std::vector<unsigned char> message;
 
-void Synth::player(short samples[], int sampleCount)
+void Synth::player(short samples[], int sampleCount, bool isMIDI)
 {
     sf::SoundBuffer buffer;
     buffer.loadFromSamples(&samples[0], sampleCount, CHANNELS, SAMPLE_RATE);
-
     sound.setBuffer(buffer);
     sound.play();
-    //sound.setPitch(640);      // remove right
-    do{
-        midiin->getMessage(&message);
 
-        std::cout << status << std::endl;
+    // oh man does this loop have a history
+    while(isMIDI)
+    {
+        if (inputMIDI)
+        {
+            inputMIDI->getMessage(&message);
+
+            // for whatever reason vectors crash if nBytes is null
+            if (message.size())
+            {
+                // only key release works for some reason
+                if ((int)message[0] == 136)
+                    isMIDI = false;
+            }
+        }
+
+        // setloop only loops for one iteration apparently
         sound.setLoop(true);
-    } while (sf::Mouse::isButtonPressed(sf::Mouse::Left) || (int)message[0] == 152);
-    std::cout << "CALLED" << std::endl;
+    }
+
+    while (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !isMIDI)
+        sound.setLoop(true);
+
     //Sleep(1000);
 }
 
-void Synth::sine(double freq)
+void Synth::sine(double freq, bool isMIDI)
 {
     const double sineAMP = 32767 * pow(10, (-6 * (10 - volume)) / 20);
     //const short sineAMP = std::round(0.25 * 32767);
@@ -66,10 +73,10 @@ void Synth::sine(double freq)
             sine[i] = sine[i] * ((samples - i) / envelope);
         */
     }
-    player(sine, samples);
+    player(sine, samples, isMIDI);
 }
 
-void Synth::square(double freq)
+void Synth::square(double freq, bool isMIDI)
 {
     const double squareAMP = 32767 * pow(10, (-6 * (10 - accent)) / 20);
     //const short squareAMP = std::round(0.8 * 32767); 
@@ -97,10 +104,10 @@ void Synth::square(double freq)
             square[i] = square[i] * ((samples - i) / envelope);
         */
     }
-    player(square, samples);
+    player(square, samples, isMIDI);
 }
 
-void Synth::saw(double freq)
+void Synth::saw(double freq, bool isMIDI)
 {
     const double squareAMP = 32767 * pow(10, (-6 * (10 - accent)) / 20);
     const int samples = SAMPLE_RATE;
@@ -115,10 +122,10 @@ void Synth::saw(double freq)
             saw[i] -= sine;
     }
 
-    player(saw, samples);
+    player(saw, samples, isMIDI);
 }
 
-void Synth::triangle(double freq)
+void Synth::triangle(double freq, bool isMIDI)
 {
     const double squareAMP = 32767 * pow(10, (-6 * (10 - accent)) / 20);
     const int samples = SAMPLE_RATE;
@@ -126,23 +133,47 @@ void Synth::triangle(double freq)
 
     for (int i = 0; i < samples; ++i)
     {
-        //saw[i] = freq - floor(freq);
-        //saw[i] = 1.0 - fabs(fmod(i, 2.0) - 1.0);
-
-        //double sinevalue = sin(2 * 3.1415 * freq);
-        //saw[i] = (2 * squareAMP) / 3.1415 * asin(sinevalue) + 128;
-
-        //saw[i] = asin(cos(i)) / 1.0;
-
         short sine = (short)(squareAMP * sin((2 * 3.1415 * freq * i) / SAMPLE_RATE));
         if (sine >= 0)
             saw[i] += (sine - 0);
         else
             saw[i] = 0;
-        //std::cout << saw[i] << std::endl;
     }
 
-    player(saw, samples);
+    player(saw, samples, isMIDI);
 }
 
+void Synth::listener()
+{
+    inputMIDI = new RtMidiIn();
 
+    unsigned int nPorts = inputMIDI->getPortCount();
+    if (nPorts == 0)
+    {
+        std::cout << "No ports detected!\n";
+        delete inputMIDI;
+    }
+
+    inputMIDI->openPort(0);
+
+    // The RtMidi docs say not to ignore this but I'm gonna do it anyway
+    inputMIDI->ignoreTypes(true, true, true);
+
+    std::cout << "Listening for MIDI from port...\n";
+    while (!sf::Mouse::isButtonPressed(sf::Mouse::Left))
+    {
+        inputMIDI->getMessage(&message);
+        if (message.size())
+        {
+            std::cout << "Key: " << " = " << (int)message[1] << ", " << std::endl;
+            std::cout << "Status: " << " = " << (int)message[0] << ", " << std::endl << std::endl;
+
+            if ((int)message[0] == 152)
+            {
+                sine(440 * pow(2, ((float)message[1] - 69) / 12), true);
+                std::cout << "OUT" << std::endl;
+            }
+        }
+    }
+    delete inputMIDI;
+}

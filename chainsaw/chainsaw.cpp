@@ -1,18 +1,11 @@
-#include "header.h"
+#include "Synth.h"
 
 int main()
 {
-    Synth::listener();
-
-    std::cout << "test" << std::endl;
     while (1)
     {
+        Synth::listener();
         if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-            Synth::sine(440);
+            Synth::sine(440, false);
     }
-
-        /*
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-            Synth::triangle(440);
-        */
 }
