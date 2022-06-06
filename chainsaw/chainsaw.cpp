@@ -62,7 +62,7 @@ int main()
 	{
 		sf::Event event;
 		window.setSize(sf::Vector2u(590, 320));
-		
+
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
@@ -116,34 +116,34 @@ bool ClickedKey(vector<sf::RectangleShape>& rectangles, sf::Event& event)
 			//HighlightKey(midi.midiRectValues.at(i), true);
 			float freq = 440 * static_cast<float>(pow(2.0, ((static_cast<float>(midi.midiRectValues.at(i) - 69) / 12))));
 			HighlightKey(midi.midiRectValues.at(i), true);
-		/*
-			switch (waveType)
-			{
-				sf::sleep(sf::milliseconds(10));
-				case sine:
+			/*
+				switch (waveType)
 				{
-					Synth::sine(freq, false);
-					break;
-				}
-				case saw:
-				{
-					Synth::saw(freq, false);
-					break;
-				}
-				case triangle:
-				{
-					Synth::triangle(freq, false);
-					break;
-				}
-				case square:
-				{
-					Synth::square(freq, false);
-					break;
-				}
-				default:
-					break;
-			}*/
-			//HighlightKey(midi.midiRectValues.at(i), true);
+					sf::sleep(sf::milliseconds(10));
+					case sine:
+					{
+						Synth::sine(freq, false);
+						break;
+					}
+					case saw:
+					{
+						Synth::saw(freq, false);
+						break;
+					}
+					case triangle:
+					{
+						Synth::triangle(freq, false);
+						break;
+					}
+					case square:
+					{
+						Synth::square(freq, false);
+						break;
+					}
+					default:
+						break;
+				}*/
+				//HighlightKey(midi.midiRectValues.at(i), true);
 			return true;
 		}
 	}
@@ -188,7 +188,7 @@ bool ClickedWaveType(sf::RectangleShape wave[], sf::Event& event)
 		if (wave[i].getGlobalBounds().contains(mousePos))
 		{
 			cout << "Clicked wave " << i << endl;
-				waveType = waveEnum(i);
+			waveType = waveEnum(i);
 			if (waveType == 0)
 				cout << "Changed to sinewave\n";
 			else if (waveType == 1)
@@ -314,7 +314,7 @@ void IsMidiConnected(bool connected)
 	{
 		drawings.midiSignal.setFillColor(sf::Color::Green);
 		drawings.midiText.setString("MIDI CONNECTED");
-	}	
+	}
 }
 
 void HighlightKey(int midiKey, bool highlight)
@@ -479,7 +479,7 @@ void DrawSprites(sf::RenderWindow& window, Drawings& drawings)
 	window.draw(drawings.midiBoarderText);
 	window.draw(drawings.cKeyBoarder);
 	window.draw(drawings.cKeyBoarderText);
-	
+
 	for (int i = 0; i < NUM_KNOBS; i++)
 		window.draw(drawings.knob[i]);
 	for (int i = 0; i < NUM_KNOBS; i++)
@@ -537,7 +537,7 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 	drawings.wave[3].setTexture(drawings.texture[7]);
 	drawings.wave[3].setPosition(345, 15);
 
-	
+
 	for (int i = 1; i < 4; i++)
 		drawings.wave[i].setColor(sf::Color::Black);
 
@@ -603,7 +603,7 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 
 	drawings.text[2].setString("RAMP");
 	drawings.text[2].setPosition(495, 120);
-	
+
 	drawings.midiSignal.setFillColor(sf::Color::Red);
 	drawings.midiSignal.setRadius(5);
 	drawings.midiSignal.setPosition(430, 13);
@@ -613,21 +613,6 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 	drawings.midiText.setFont(font);
 	drawings.midiText.setFillColor(sf::Color::White);
 	drawings.midiText.setCharacterSize(12);
-
-	//590 320
-	/*
-	drawings.midiBoarder.setPosition(445, 5);
-	drawings.midiBoarder.setOutlineColor(sf::Color(222, 116, 44));
-	drawings.midiBoarder.setOutlineThickness(1);
-	drawings.midiBoarder.setSize(sf::Vector2f(205.0f, 45.0f));
-	drawings.midiBoarder.setFillColor(sf::Color::Black);
-
-	drawings.midiBoarderText.setString("MIDI");
-	drawings.midiBoarderText.setPosition(260, 65);
-	drawings.midiBoarderText.setFont(font);
-	drawings.midiBoarderText.setFillColor(sf::Color::White);
-	drawings.midiBoarderText.setCharacterSize(12);
-	*/
 
 	//set the origin of each knob to the center so rotation can properly occur
 	for (int i = 0; i < NUM_KNOBS; i++)
