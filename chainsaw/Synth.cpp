@@ -4,6 +4,7 @@
 //#include<Windows.h>
 #include <SFML/Audio.hpp>
 
+
 const int SAMPLE_RATE = 48000;
 const short CHANNELS = 1;
 
@@ -152,6 +153,7 @@ void Synth::listener()
     {
         std::cout << "No ports detected!\n";
         delete inputMIDI;
+        return;
     }
 
     inputMIDI->openPort(0);

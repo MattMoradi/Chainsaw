@@ -18,18 +18,18 @@
     <ClCompile Include="chainsaw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Downloads\rtmidi-5.0.0\RtMidi.cpp">
+    <ClCompile Include="Synth.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Synth.cpp">
+    <ClCompile Include="RtMidi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\RtMidi.h">
+    <ClInclude Include="Synth.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Synth.h">
+    <ClInclude Include="RtMidi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
