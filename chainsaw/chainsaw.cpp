@@ -115,34 +115,34 @@ bool ClickedKey(vector<sf::RectangleShape>& rectangles, sf::Event& event)
 
 			//HighlightKey(midi.midiRectValues.at(i), true);
 			float freq = 440 * static_cast<float>(pow(2.0, ((static_cast<float>(midi.midiRectValues.at(i) - 69) / 12))));
-			HighlightKey(midi.midiRectValues.at(i), true);
-			/*
+			//HighlightKey(midi.midiRectValues.at(i), true);
+			
 				switch (waveType)
 				{
 					sf::sleep(sf::milliseconds(10));
 					case sine:
 					{
-						Synth::sine(freq, false);
+						Synth::sine(freq, false,midi);
 						break;
 					}
 					case saw:
 					{
-						Synth::saw(freq, false);
+						Synth::saw(freq, false, midi);
 						break;
 					}
 					case triangle:
 					{
-						Synth::triangle(freq, false);
+						Synth::triangle(freq, false, midi);
 						break;
 					}
 					case square:
 					{
-						Synth::square(freq, false);
+						Synth::square(freq, false, midi);
 						break;
 					}
 					default:
 						break;
-				}*/
+				}
 				//HighlightKey(midi.midiRectValues.at(i), true);
 			return true;
 		}
