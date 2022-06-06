@@ -21,7 +21,7 @@
     <ClCompile Include="Synth.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Desktop\RtMidi.cpp">
+    <ClCompile Include="..\..\..\..\Downloads\rtmidi-5.0.0\RtMidi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -4,13 +4,8 @@
 //#include<Windows.h>
 #include <SFML/Audio.hpp>
 
-
 const int SAMPLE_RATE = 48000;
 const short CHANNELS = 1;
-
-double ramp = 0.5;
-double accent = 5.0;
-double volume = 8.0;
 
 sf::Sound sound;
 
@@ -18,7 +13,7 @@ sf::Sound sound;
 RtMidiIn* inputMIDI;
 std::vector<unsigned char> message;
 
-void Synth::player(short samples[], int sampleCount, bool isMIDI)
+void Synth::player(short samples[], int sampleCount, bool isMIDI, struct Midi)
 {
     sf::SoundBuffer buffer;
     buffer.loadFromSamples(&samples[0], sampleCount, CHANNELS, SAMPLE_RATE);
@@ -51,9 +46,9 @@ void Synth::player(short samples[], int sampleCount, bool isMIDI)
     //Sleep(1000);
 }
 
-void Synth::sine(double freq, bool isMIDI)
+void Synth::sine(double freq, bool isMIDI, Midi data)
 {
-    const double sineAMP = 32767 * pow(10, (-6 * (10 - volume)) / 20);
+    const double sineAMP = 32767 * pow(10, (-6 * (10 - data.volume)) / 20);
     //const short sineAMP = std::round(0.25 * 32767);
     //std::cout << sineAMP << std::endl;;
     const int samples = SAMPLE_RATE;
@@ -74,12 +69,12 @@ void Synth::sine(double freq, bool isMIDI)
             sine[i] = sine[i] * ((samples - i) / envelope);
         */
     }
-    player(sine, samples, isMIDI);
+    player(sine, samples, isMIDI, data);
 }
 
-void Synth::square(double freq, bool isMIDI)
+void Synth::square(double freq, bool isMIDI, Midi data)
 {
-    const double squareAMP = 32767 * pow(10, (-6 * (10 - accent)) / 20);
+    const double squareAMP = 32767 * pow(10, (-6 * (10 - data.volume)) / 20);
     //const short squareAMP = std::round(0.8 * 32767); 
     const int samples = SAMPLE_RATE;
     short square[SAMPLE_RATE];
@@ -105,30 +100,12 @@ void Synth::square(double freq, bool isMIDI)
             square[i] = square[i] * ((samples - i) / envelope);
         */
     }
-    player(square, samples, isMIDI);
+    player(square, samples, isMIDI, data);
 }
 
-void Synth::saw(double freq, bool isMIDI)
+void Synth::saw(double freq, bool isMIDI, Midi data)
 {
-    const double squareAMP = 32767 * pow(10, (-6 * (10 - accent)) / 20);
-    const int samples = SAMPLE_RATE;
-    short saw[SAMPLE_RATE];
-
-    for (int i = 0; i < samples; ++i)
-    {
-        short sine = (short)(squareAMP * sin((2 * 3.1415 * freq * i) / SAMPLE_RATE));
-        if (sine >= 0)
-            saw[i] += sine;
-        else
-            saw[i] -= sine;
-    }
-
-    player(saw, samples, isMIDI);
-}
-
-void Synth::triangle(double freq, bool isMIDI)
-{
-    const double squareAMP = 32767 * pow(10, (-6 * (10 - accent)) / 20);
+    const double squareAMP = 32767 * pow(10, (-6 * (10 - data.volume)) / 20);
     const int samples = SAMPLE_RATE;
     short saw[SAMPLE_RATE];
 
@@ -141,11 +118,31 @@ void Synth::triangle(double freq, bool isMIDI)
             saw[i] = 0;
     }
 
-    player(saw, samples, isMIDI);
+    player(saw, samples, isMIDI, data);
 }
 
-void Synth::listener()
+void Synth::triangle(double freq, bool isMIDI, Midi data)
 {
+    const double squareAMP = 32767 * pow(10, (-6 * (10 - data.volume)) / 20);
+    const int samples = SAMPLE_RATE;
+    short saw[SAMPLE_RATE];
+
+    for (int i = 0; i < samples; ++i)
+    {
+        short sine = (short)(squareAMP * sin((2 * 3.1415 * freq * i) / SAMPLE_RATE));
+        if (sine >= 0)
+            saw[i] += sine;
+        else
+            saw[i] -= sine;
+    }
+
+    player(saw, samples, isMIDI, data);
+}
+
+void Synth::listener(Midi data)
+{
+    //HighlightKey(70, true);
+
     inputMIDI = new RtMidiIn();
 
     unsigned int nPorts = inputMIDI->getPortCount();
@@ -162,17 +159,18 @@ void Synth::listener()
     inputMIDI->ignoreTypes(true, true, true);
 
     std::cout << "Listening for MIDI from port...\n";
-    while (!sf::Mouse::isButtonPressed(sf::Mouse::Left))
+    while (!sf::Mouse::isButtonPressed(sf::Mouse::Left) && !sf::Mouse::isButtonPressed(sf::Mouse::Right))
     {
         inputMIDI->getMessage(&message);
         if (message.size())
         {
             std::cout << "Key: " << " = " << (int)message[1] << ", " << std::endl;
             std::cout << "Status: " << " = " << (int)message[0] << ", " << std::endl << std::endl;
-
+    
             if ((int)message[0] == 152)
             {
-                sine(440 * pow(2, ((float)message[1] - 69) / 12), true);
+                HighlightKey(message[1], true);
+                //sine(440 * pow(2, ((float)message[1] - 69) / 12), true, data);
                 std::cout << "OUT" << std::endl;
             }
         }

@@ -5,12 +5,6 @@ const int NUM_KEYS = 37;
 
 void HighlightKey(int midiKey, bool highlight); 
 
-/*
-double ramp = 0.5;
-double accent = 5.0;
-double volume = 8.0;
-*/
-
 struct Midi
 {
 	float ramp = 0.5f; // 0.0 - 0.5
@@ -26,11 +20,11 @@ struct Midi
 class Synth
 {
 public:
-	static void player(short samples[], int sampleCount, bool isMIDI);
-	static void sine(double freq, bool isMIDI);
-	static void square(double freq, bool isMIDI);
-	static void saw(double freq, bool isMIDI);
-	static void triangle(double freq, bool isMIDI);
+	static void player(short samples[], int sampleCount, bool isMIDI, struct Midi);
+	static void sine(double freq, bool isMIDI, struct Midi);
+	static void square(double freq, bool isMIDI, struct Midi);
+	static void saw(double freq, bool isMIDI, struct Midi);
+	static void triangle(double freq, bool isMIDI, struct Midi);
 
-	static void listener();
+	static void listener(struct Midi);
 };
