@@ -29,12 +29,18 @@ struct Drawings
 	sf::CircleShape octaveTickValues[6];
 	sf::CircleShape gainTickValues[11];
 	sf::CircleShape rampTickValues[6];
+	sf::Text envelopeText;
+	sf::CircleShape envelopeCircle[2];
+	sf::RectangleShape envelopeSquare;
+	sf::CircleShape envelopeStatusCircle;
+	sf::Text envelopeStatusText;
 };
 
 void MapMidiKeysToRect();
 bool ClickedKey(vector<sf::RectangleShape>& rectangles, sf::Event& event);
 bool ClickedKnob(sf::Sprite knob[], sf::Event& event, Midi& midi);
 bool ClickedWaveType(sf::RectangleShape wave[], sf::Event& event);
+bool ClickedEnvelopeSwitch(sf::Event& event);
 void GenerateKeyboardKeys(vector<sf::RectangleShape>& rectangles, sf::RenderWindow& window);
 void UpdateValuesFromKnob(int index, int value, sf::Sprite knob[], Midi& midi);
 void LoadTextures(Drawings& drawings, sf::Font& font);
@@ -77,6 +83,8 @@ int main()
 						cout << "Mouse out of rect\n";
 					if (!ClickedWaveType(drawings.waveBackground, event))
 						cout << "mouse not on wave\n";
+					if (!ClickedEnvelopeSwitch(event))
+						cout << "mouse not on envelope\n";
 				}
 				if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 					cout << "right mouse clicked\n";
@@ -216,6 +224,41 @@ bool ClickedWaveType(sf::RectangleShape wave[], sf::Event& event)
 			return false;
 		}
 	}
+	return false;
+}
+
+bool ClickedEnvelopeSwitch(sf::Event& event)
+{
+	int mx = event.mouseButton.x;
+	int my = event.mouseButton.y;
+	sf::Vector2f mousePos(mx, my);
+	
+		if (drawings.envelopeSquare.getGlobalBounds().contains(mousePos) || drawings.envelopeCircle[0].getGlobalBounds().contains(mousePos) || 
+			drawings.envelopeCircle[1].getGlobalBounds().contains(mousePos))
+		{
+			cout << "Clicked envelope switch " << endl;
+			if (midi.isUsingEnvelope)
+			{
+				midi.isUsingEnvelope = false;
+				drawings.envelopeStatusText.setString("ON");
+				drawings.envelopeStatusText.setPosition(500, 133);
+				drawings.envelopeStatusCircle.setPosition(526, 128);
+				drawings.envelopeSquare.setFillColor(sf::Color(222, 116, 44));
+				drawings.envelopeCircle[0].setFillColor(sf::Color(222, 116, 44));
+				drawings.envelopeCircle[1].setFillColor(sf::Color(222, 116, 44));
+			}
+			else
+			{
+				midi.isUsingEnvelope = true;
+				drawings.envelopeStatusText.setString("OFF");
+				drawings.envelopeStatusText.setPosition(515, 133);
+				drawings.envelopeStatusCircle.setPosition(490, 128);
+				drawings.envelopeSquare.setFillColor(sf::Color::Black);
+				drawings.envelopeCircle[0].setFillColor(sf::Color::Black);
+				drawings.envelopeCircle[1].setFillColor(sf::Color::Black);
+			}
+			return true;
+		}
 	return false;
 }
 
@@ -481,7 +524,7 @@ void DrawSprites(sf::RenderWindow& window, Drawings& drawings)
 	window.draw(drawings.midiBoarderText);
 	window.draw(drawings.cKeyBoarder);
 	window.draw(drawings.cKeyBoarderText);
-
+	window.draw(drawings.envelopeText);
 	for (int i = 0; i < 6; i++)
 		window.draw(drawings.rampTickValues[i]);
 	for (int i = 0; i < 11; i++)
@@ -500,6 +543,11 @@ void DrawSprites(sf::RenderWindow& window, Drawings& drawings)
 		window.draw(rectangles[i]);
 	for (int i = 0; i < 4; i++)
 		window.draw(drawings.cKey[i]);
+	for (int i = 0; i < 2; i++)
+		window.draw(drawings.envelopeCircle[i]);
+	window.draw(drawings.envelopeSquare);
+	window.draw(drawings.envelopeStatusCircle);
+	window.draw(drawings.envelopeStatusText);
 }
 
 void LoadTextures(Drawings& drawings, sf::Font& font)
@@ -522,7 +570,7 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 	drawings.knob[1].setTexture(drawings.texture[8]);
 	drawings.knob[1].setPosition(80, 40);
 	drawings.knob[2].setTexture(drawings.texture[2]);
-	drawings.knob[2].setPosition(510, 80);
+	drawings.knob[2].setPosition(510, 70);
 	drawings.knob[2].setRotation(-125.0f);
 
 	drawings.texture[3].loadFromFile("Resources/Images/chainsawText.png", sf::IntRect(0, 0, 212, 26));
@@ -613,14 +661,42 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 		drawings.rampTickValues[i].setFillColor(sf::Color::White);
 		drawings.rampTickValues[i].setRadius(2.0f);
 	}
-	drawings.rampTickValues[0].setPosition(476, 97);
-	drawings.rampTickValues[1].setPosition(472, 68);
-	drawings.rampTickValues[2].setPosition(489, 45);
-	drawings.rampTickValues[3].setPosition(526, 45);
-	drawings.rampTickValues[4].setPosition(544, 68);
-	drawings.rampTickValues[5].setPosition(538, 97);
 
+	drawings.rampTickValues[0].setPosition(476, 87);
+	drawings.rampTickValues[1].setPosition(472, 58);
+	drawings.rampTickValues[2].setPosition(489, 35);
+	drawings.rampTickValues[3].setPosition(526, 35);
+	drawings.rampTickValues[4].setPosition(544, 58);
+	drawings.rampTickValues[5].setPosition(538, 87);
 
+	drawings.envelopeText.setFont(font);
+	drawings.envelopeText.setFillColor(sf::Color::White);
+	drawings.envelopeText.setCharacterSize(12);
+	drawings.envelopeText.setString("ENVELOPE");
+	drawings.envelopeText.setPosition(480, 150);
+	
+	drawings.envelopeStatusText.setFont(font);
+	drawings.envelopeStatusText.setFillColor(sf::Color::White);
+	drawings.envelopeStatusText.setCharacterSize(9);
+	drawings.envelopeStatusText.setString("OFF");
+	drawings.envelopeStatusText.setPosition(515, 133);
+
+	drawings.envelopeStatusCircle.setRadius(10.0f);
+	drawings.envelopeStatusCircle.setFillColor(sf::Color::White);
+	drawings.envelopeStatusCircle.setPosition(490, 128);
+
+	for (int i = 0; i < 2; i++)
+	{
+		drawings.envelopeCircle[i].setFillColor(sf::Color::Black);
+		drawings.envelopeCircle[i].setRadius(12.5f);
+	}
+
+	drawings.envelopeCircle[0].setPosition(485, 125);
+	drawings.envelopeCircle[1].setPosition(525, 125);
+
+	drawings.envelopeSquare.setPosition(495, 125);
+	drawings.envelopeSquare.setSize(sf::Vector2f(40, 25));
+	drawings.envelopeSquare.setFillColor(sf::Color::Black);
 
 	drawings.cKeyBoarder.setPosition(170, 10);
 	drawings.cKeyBoarder.setOutlineColor(sf::Color(222, 116, 44));
@@ -667,7 +743,7 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 	drawings.text[1].setPosition(65, 66);
 
 	drawings.text[2].setString("RAMP");
-	drawings.text[2].setPosition(494, 110);
+	drawings.text[2].setPosition(494, 100);
 
 	drawings.midiSignal.setFillColor(sf::Color::Red);
 	drawings.midiSignal.setRadius(5);
