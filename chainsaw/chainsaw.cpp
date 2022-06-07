@@ -26,9 +26,9 @@ struct Drawings
 	sf::CircleShape midiSignal;
 	sf::RectangleShape midiBoarder;
 	sf::Text midiBoarderText;
-	sf::Text octaveValues[6];
-	sf::Text volumeValues[11];
-	sf::Text rampValues[6];
+	sf::CircleShape octaveTickValues[6];
+	sf::CircleShape gainTickValues[11];
+	sf::CircleShape rampTickValues[6];
 };
 
 void MapMidiKeysToRect();
@@ -58,6 +58,7 @@ int main()
 	MapMidiKeysToRect();
 	LoadTextures(drawings, font);
 	IsMidiConnected(true);
+
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -111,12 +112,9 @@ bool ClickedKey(vector<sf::RectangleShape>& rectangles, sf::Event& event)
 		{
 			cout << "Mouse is inside rect " << i << endl;
 			cout << "Playing midi note: " << midi.midiRectValues.at(i) << endl;
-			//rectangles[i].setFillColor(sf::Color(255, 165, 0));
 
-			//HighlightKey(midi.midiRectValues.at(i), true);
 			float freq = 440 * static_cast<float>(pow(2.0, ((static_cast<float>(midi.midiRectValues.at(i) - 69) / 12))));
-			//HighlightKey(midi.midiRectValues.at(i), true);
-			
+
 				switch (waveType)
 				{
 					sf::sleep(sf::milliseconds(10));
@@ -149,7 +147,6 @@ bool ClickedKey(vector<sf::RectangleShape>& rectangles, sf::Event& event)
 					default:
 						break;
 				}
-				//HighlightKey(midi.midiRectValues.at(i), true);
 			return true;
 		}
 	}
@@ -177,7 +174,7 @@ bool ClickedKnob(sf::Sprite knob[], sf::Event& event, Midi& midi)
 				UpdateValuesFromKnob(i, 1, knob, midi);
 			}
 			else
-				cout << "shits fucked fam\n";
+				cout << "ERROR: ClickedKnob function, mouse was not pressed with left or right mouse button\n";
 			return false;
 		}
 	}
@@ -207,7 +204,9 @@ bool ClickedWaveType(sf::RectangleShape wave[], sf::Event& event)
 				cout << "changed to white noise wave\n";
 			else
 				cout << "ERROR: did not properly set wave type\n";
+
 			wave[i].setFillColor(sf::Color(222, 116, 44));
+
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
 				for (int j = 0; j < 5; j++)
@@ -488,6 +487,12 @@ void DrawSprites(sf::RenderWindow& window, Drawings& drawings)
 	window.draw(drawings.cKeyBoarder);
 	window.draw(drawings.cKeyBoarderText);
 
+	for (int i = 0; i < 6; i++)
+		window.draw(drawings.rampTickValues[i]);
+	for (int i = 0; i < 11; i++)
+		window.draw(drawings.gainTickValues[i]);
+	for (int i = 0; i < 6; i++)
+		window.draw(drawings.octaveTickValues[i]);
 	for (int i = 0; i < NUM_KNOBS; i++)
 		window.draw(drawings.knob[i]);
 	for (int i = 0; i < NUM_KNOBS; i++)
@@ -514,10 +519,10 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 	drawings.logo.setTexture(drawings.texture[1]);
 	drawings.logo.setPosition(160, 100);
 
-	drawings.texture[2].loadFromFile("Resources/Images/AudioKnob.png", sf::IntRect(0, 0, 59, 65));
-	drawings.texture[8].loadFromFile("Resources/Images/AudioKnob1.png", sf::IntRect(0, 0, 44, 49));
+	drawings.texture[2].loadFromFile("Resources/Images/AudioKnobLarge.png", sf::IntRect(0, 0, 65, 65));
+	drawings.texture[8].loadFromFile("Resources/Images/AudioKnobSmall.png", sf::IntRect(0, 0, 50, 50));
 	drawings.knob[0].setTexture(drawings.texture[8]);
-	drawings.knob[0].setPosition(80, 120);
+	drawings.knob[0].setPosition(80, 125);
 	drawings.knob[0].setRotation(-125.0f);
 	drawings.knob[1].setTexture(drawings.texture[8]);
 	drawings.knob[1].setPosition(80, 40);
@@ -525,9 +530,9 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 	drawings.knob[2].setPosition(510, 80);
 	drawings.knob[2].setRotation(-125.0f);
 
-	drawings.texture[3].loadFromFile("Resources/Images/chainsawText.png", sf::IntRect(0, 0, 265, 37));
+	drawings.texture[3].loadFromFile("Resources/Images/chainsawText.png", sf::IntRect(0, 0, 212, 26));
 	drawings.chainsawLogo.setTexture(drawings.texture[3]);
-	drawings.chainsawLogo.setPosition(195, 170);
+	drawings.chainsawLogo.setPosition(190, 172);
 
 	drawings.texture[4].loadFromFile("Resources/Images/sineWave.png", sf::IntRect(0, 0, 60, 60));
 	drawings.wave[0].setTexture(drawings.texture[4]);
@@ -546,7 +551,7 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 	drawings.wave[3].setTexture(drawings.texture[7]);
 	drawings.wave[3].setPosition(328, 17);
 
-	drawings.texture[9].loadFromFile("Resources/Images/whtieNoiseWave1.png", sf::IntRect(0, 0, 43, 40));
+	drawings.texture[9].loadFromFile("Resources/Images/whtieNoiseWave.png", sf::IntRect(0, 0, 43, 40));
 	drawings.wave[4].setTexture(drawings.texture[9]);
 	drawings.wave[4].setPosition(375, 15);
 
@@ -574,6 +579,51 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 	drawings.waveBackground[4].setSize(sf::Vector2f(45, 40));
 	drawings.waveBackground[4].setFillColor(sf::Color::White);
 
+	//Octave tick values
+	for (int i = 0; i < 6; i++)
+	{
+		drawings.octaveTickValues[i].setFillColor(sf::Color::White);
+		drawings.octaveTickValues[i].setRadius(2.0f);
+	}
+	
+	drawings.octaveTickValues[0].setPosition(52, 140);
+	drawings.octaveTickValues[1].setPosition(48, 117);
+	drawings.octaveTickValues[2].setPosition(65, 96);
+	drawings.octaveTickValues[3].setPosition(91, 96);
+	drawings.octaveTickValues[4].setPosition(106, 118);
+	drawings.octaveTickValues[5].setPosition(101, 139);
+
+	//gain tick values
+	for (int i = 0; i < 11; i++)
+	{
+		drawings.gainTickValues[i].setFillColor(sf::Color::White);
+		drawings.gainTickValues[i].setRadius(2.0f);
+	}
+
+	drawings.gainTickValues[0].setPosition(53, 55);
+	drawings.gainTickValues[1].setPosition(48, 42);
+	drawings.gainTickValues[2].setPosition(49, 30);
+	drawings.gainTickValues[3].setPosition(53, 20);
+	drawings.gainTickValues[4].setPosition(63, 12);
+	drawings.gainTickValues[5].setPosition(76, 9);
+	drawings.gainTickValues[6].setPosition(90, 12);
+	drawings.gainTickValues[7].setPosition(101, 20);
+	drawings.gainTickValues[8].setPosition(107, 30);
+	drawings.gainTickValues[9].setPosition(106,42);
+	drawings.gainTickValues[10].setPosition(102, 56);
+
+	//ramp tick value
+	for (int i = 0; i < 6; i++)
+	{
+		drawings.rampTickValues[i].setFillColor(sf::Color::White);
+		drawings.rampTickValues[i].setRadius(2.0f);
+	}
+	drawings.rampTickValues[0].setPosition(476, 97);
+	drawings.rampTickValues[1].setPosition(472, 68);
+	drawings.rampTickValues[2].setPosition(489, 45);
+	drawings.rampTickValues[3].setPosition(526, 45);
+	drawings.rampTickValues[4].setPosition(544, 68);
+	drawings.rampTickValues[5].setPosition(538, 97);
 
 
 
@@ -619,10 +669,10 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 	drawings.text[0].setPosition(55, 150);
 
 	drawings.text[1].setString("GAIN");
-	drawings.text[1].setPosition(65, 70);
+	drawings.text[1].setPosition(65, 66);
 
 	drawings.text[2].setString("RAMP");
-	drawings.text[2].setPosition(495, 120);
+	drawings.text[2].setPosition(494, 110);
 
 	drawings.midiSignal.setFillColor(sf::Color::Red);
 	drawings.midiSignal.setRadius(5);
