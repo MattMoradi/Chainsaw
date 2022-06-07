@@ -98,11 +98,16 @@ void Synth::square(double freq, bool isMIDI, Midi data)
         {
             double envelope = data.ramp * samples;
 
-            if (i < envelope)
-                square[i] = square[i] * (i / envelope);
+            if (data.isUsingEnvelope)
+                square[i] = square[i] * (samples / envelope);
+            else
+            {
+                if (i < envelope)
+                    square[i] = square[i] * (i / envelope);
 
-            if (i >= envelope)
-                square[i] = square[i] * ((samples - i) / envelope);
+                if (i >= envelope)
+                    square[i] = square[i] * ((samples - i) / envelope);
+            }
         }
     }
     player(square, samples, isMIDI, data);

@@ -56,12 +56,11 @@ vector<sf::RectangleShape> rectangles;
 int main()
 {
 	sf::Font font;
-	sf::RenderWindow window(sf::VideoMode(590, 320), "Chainsaw Demo v1.0");
+	sf::RenderWindow window(sf::VideoMode(590, 320), "Chainsaw v1.0");
 	font.loadFromFile("Resources/Fonts/Arial.ttf");
 	GenerateKeyboardKeys(rectangles, window);
 	MapMidiKeysToRect();
 	LoadTextures(drawings, font);
-	IsMidiConnected(true);
 
 	while (window.isOpen())
 	{
