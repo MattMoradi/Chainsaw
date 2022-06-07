@@ -14,7 +14,7 @@ Chainsaw is an open source standalone synthesizer based on SFML that can make co
 3. Build & Run Solution
 
 ## Linux (Debian):
-1. Install SFML: sudo apt-get install libsfml-dev
+1. Install SFML: `sudo apt-get install libsfml-dev`
 2. Download [RtMidi](http://www.music.mcgill.ca/~gary/rtmidi/index.html) and extract `RtMidi.h` and `RtMidi.cpp` to the `include/` folder in this repo
 3. Run `make`
-4. Run `./chainsaw`
+4. Run `./Chainsaw`
