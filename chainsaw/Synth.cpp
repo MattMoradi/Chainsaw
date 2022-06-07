@@ -1,6 +1,7 @@
 #include "Synth.h"
 #include "RtMidi.h"
 #include <cstdlib>
+#include <cmath>
 //#include<Windows.h>
 #include <SFML/Audio.hpp>
 
@@ -63,11 +64,16 @@ void Synth::sine(double freq, bool isMIDI, Midi data)
         {
             double envelope = data.ramp * samples;
 
-            if (i < envelope)
-                sine[i] = sine[i] * (i / envelope);
+            if (data.isUsingEnvelope)
+                sine[i] = sine[i] * (samples / envelope);
+            else
+            {
+                if (i < envelope)
+                    sine[i] = sine[i] * (i / envelope);
 
-            if (i >= envelope)
-                sine[i] = sine[i] * ((samples - i) / envelope);
+                if (i >= envelope)
+                    sine[i] = sine[i] * ((samples - i) / envelope);
+            }
         }
     }
     player(sine, samples, isMIDI, data);
@@ -131,11 +137,16 @@ void Synth::saw(double freq, bool isMIDI, Midi data)
         {
             double envelope = data.ramp * samples;
 
-            if (i < envelope)
-                saw[i] = saw[i] * (i / envelope);
+            if (data.isUsingEnvelope)
+                saw[i] = saw[i] * (samples / envelope);
+            else
+            {
+                if (i < envelope)
+                    saw[i] = saw[i] * (i / envelope);
 
-            if (i >= envelope)
-                saw[i] = saw[i] * ((samples - i) / envelope);
+                if (i >= envelope)
+                    saw[i] = saw[i] * ((samples - i) / envelope);
+            }
         }
     }
     player(saw, samples, isMIDI, data);
@@ -159,11 +170,16 @@ void Synth::triangle(double freq, bool isMIDI, Midi data)
         {
             double envelope = data.ramp * samples;
 
-            if (i < envelope)
-                triangle[i] = triangle[i] * (i / envelope);
+            if (data.isUsingEnvelope)
+                triangle[i] = triangle[i] * (samples / envelope);
+            else
+            {
+                if (i < envelope)
+                    triangle[i] = triangle[i] * (i / envelope);
 
-            if (i >= envelope)
-                triangle[i] = triangle[i] * ((samples - i) / envelope);
+                if (i >= envelope)
+                    triangle[i] = triangle[i] * ((samples - i) / envelope);
+            }
         }
     }
     player(triangle, samples, isMIDI, data);

@@ -56,7 +56,7 @@ vector<sf::RectangleShape> rectangles;
 int main()
 {
 	sf::Font font;
-	sf::RenderWindow window(sf::VideoMode(590, 320), "Chainsaw v1.0");
+	sf::RenderWindow window(sf::VideoMode(590, 320), "Chainsaw v1.1");
 	font.loadFromFile("Resources/Fonts/Arial.ttf");
 	GenerateKeyboardKeys(rectangles, window);
 	MapMidiKeysToRect();
@@ -748,7 +748,7 @@ void LoadTextures(Drawings& drawings, sf::Font& font)
 	drawings.midiSignal.setRadius(5);
 	drawings.midiSignal.setPosition(440, 13);
 
-	drawings.midiText.setString("MIDI DISCONNECTED");
+	drawings.midiText.setString("NO MIDI");
 	drawings.midiText.setPosition(460, 10);
 	drawings.midiText.setFont(font);
 	drawings.midiText.setFillColor(sf::Color::White);
