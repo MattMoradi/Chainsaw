@@ -125,23 +125,41 @@ void Synth::triangle(double freq, bool isMIDI, Midi data)
 {
     const double squareAMP = 32767 * pow(10, (-6 * (10 - data.volume)) / 20);
     const int samples = SAMPLE_RATE;
-    short saw[SAMPLE_RATE];
+    short triangle[SAMPLE_RATE];
 
     for (int i = 0; i < samples; ++i)
     {
         short sine = (short)(squareAMP * sin((2 * 3.1415 * freq * i) / SAMPLE_RATE));
         if (sine >= 0)
-            saw[i] += sine;
+            triangle[i] += sine;
         else
-            saw[i] -= sine;
+            triangle[i] -= sine;
     }
 
-    player(saw, samples, isMIDI, data);
+    player(triangle, samples, isMIDI, data);
+}
+
+void Synth::noise(double freq, bool isMIDI, Midi data)
+{
+    const double AMP = 32767 * pow(10, (-6 * (10 - data.volume)) / 20);
+    const int samples = SAMPLE_RATE;
+    short noise[SAMPLE_RATE];
+    time_t t;
+    srand((unsigned)time(&t));
+
+    for (int i = 0; i < samples; ++i)
+    {
+        noise[i] = rand() % (int)AMP;
+        //std::cout << noise[i] << std::endl;
+    }
+    player(noise, samples, isMIDI, data);
 }
 
 void Synth::listener(Midi data)
 {
     //HighlightKey(70, true);
+
+    double freq;
 
     inputMIDI = new RtMidiIn();
 
@@ -170,7 +188,21 @@ void Synth::listener(Midi data)
             if ((int)message[0] == 152)
             {
                 HighlightKey(message[1], true);
-                //sine(440 * pow(2, ((float)message[1] - 69) / 12), true, data);
+                freq = 440 * pow(2, ((float)message[1] - 69) / 12);
+
+                switch (data.waveType)
+                {
+                    case waveEnum::sine: Synth::sine(freq, true, data); break;
+                    case waveEnum::saw: Synth::saw(freq, true, data); break;
+                    case waveEnum::triangle: Synth::triangle(freq, true, data); break;
+                    case waveEnum::square: Synth::square(freq, true, data); break;
+                    case whiteNoise:
+                {
+                    Synth::noise(freq, true, data);
+                    break;
+                }
+                    default: break;
+                }
                 std::cout << "OUT" << std::endl;
             }
         }

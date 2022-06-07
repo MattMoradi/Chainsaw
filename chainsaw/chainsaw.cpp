@@ -7,7 +7,6 @@
 using namespace std;
 const int NUM_KNOBS = 3;
 const int NUM_TEXTURES = 10;
-enum waveEnum { sine, saw, triangle, square, whiteNoise };
 struct Drawings
 {
 	sf::Texture texture[NUM_TEXTURES];
@@ -47,7 +46,6 @@ bool UpdateRamp(int value);
 Midi midi;
 Drawings drawings;
 vector<sf::RectangleShape> rectangles;
-waveEnum waveType;
 
 int main()
 {
@@ -68,7 +66,7 @@ int main()
 			if (event.type == sf::Event::Closed)
 				window.close();
 
-			//Synth::listener();
+			Synth::listener(midi);
 
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
@@ -117,7 +115,7 @@ bool ClickedKey(vector<sf::RectangleShape>& rectangles, sf::Event& event)
 			float freq = 440 * static_cast<float>(pow(2.0, ((static_cast<float>(midi.midiRectValues.at(i) - 69) / 12))));
 			//HighlightKey(midi.midiRectValues.at(i), true);
 			
-				switch (waveType)
+				switch (midi.waveType)
 				{
 					sf::sleep(sf::milliseconds(10));
 					case sine:
@@ -194,16 +192,16 @@ bool ClickedWaveType(sf::RectangleShape wave[], sf::Event& event)
 		if (wave[i].getGlobalBounds().contains(mousePos))
 		{
 			cout << "Clicked wave " << i << endl;
-			waveType = waveEnum(i);
-			if (waveType == 0)
+			midi.waveType = waveEnum(i);
+			if (midi.waveType == 0)
 				cout << "Changed to sinewave\n";
-			else if (waveType == 1)
+			else if (midi.waveType == 1)
 				cout << "Changed to saw wave\n";
-			else if (waveType == 2)
+			else if (midi.waveType == 2)
 				cout << "changed to triangle wave\n";
-			else if (waveType == 3)
+			else if (midi.waveType == 3)
 				cout << "changed to squre wave\n";
-			else if (waveType == 4)
+			else if (midi.waveType == 4)
 				cout << "changed to white noise wave\n";
 			else
 				cout << "ERROR: did not properly set wave type\n";
