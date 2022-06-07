@@ -1,8 +1,8 @@
 #include "Synth.h"
-#include<SFML/Graphics.hpp>
 #include<iostream>
 #include<cmath>
 #include<cstdlib>
+#include<SFML/Graphics.hpp>
 
 using namespace std;
 const int NUM_KNOBS = 3;
@@ -32,7 +32,6 @@ struct Drawings
 };
 
 void MapMidiKeysToRect();
-void IsMidiConnected(bool connected);
 bool ClickedKey(vector<sf::RectangleShape>& rectangles, sf::Event& event);
 bool ClickedKnob(sf::Sprite knob[], sf::Event& event, Midi& midi);
 bool ClickedWaveType(sf::RectangleShape wave[], sf::Event& event);
@@ -62,13 +61,11 @@ int main()
 	{
 		sf::Event event;
 		window.setSize(sf::Vector2u(590, 320));
-
+		
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-
-			//Synth::listener();
 
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
@@ -96,6 +93,7 @@ int main()
 		window.clear(sf::Color::Black);
 		DrawSprites(window, drawings);
 		window.display();
+		Synth::listener(midi);
 	}
 }
 
@@ -397,7 +395,7 @@ bool UpdateVolume(int amount)
 bool UpdateRamp(int amount)
 {
 	float val;
-	if ((amount < 0 && midi.ramp < 0.1f) || (amount > 0 && midi.ramp > 0.45))
+	if ((amount < 0 && midi.ramp < 0.001f) || (amount > 0 && midi.ramp > 0.0045))
 	{
 		cout << "did not update ramp. ramp is at " << midi.ramp << endl;
 		return false;
@@ -406,19 +404,18 @@ bool UpdateRamp(int amount)
 	if (amount > 0)
 	{
 
-		val = .1f;
+		val = .001f;
 		cout << "Rotating right\n";
 	}
 	else
 	{
-		val = -.1f;
+		val = -.001f;
 		cout << "Rotating left\n";
 	}
 	if (midi.ramp < 0.0)
 		midi.ramp = 0.0f;
 	midi.ramp += val;
 	cout << "ramp is now: " << midi.ramp << "\n";
-
 
 	return true;
 }

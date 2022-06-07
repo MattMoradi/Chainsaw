@@ -59,15 +59,16 @@ void Synth::sine(double freq, bool isMIDI, Midi data)
     {
         sine[i] = (short)(sineAMP * sin((2 * 3.1415 * freq * i) / SAMPLE_RATE));
 
-        /*
-        double envelope = ramp * samples;
+        if (data.ramp >= 0.001f)
+        {
+            double envelope = data.ramp * samples;
 
-        if (i < envelope)
-            sine[i] = sine[i] * (i / envelope);
+            if (i < envelope)
+                sine[i] = sine[i] * (i / envelope);
 
-        if (i >= envelope)
-            sine[i] = sine[i] * ((samples - i) / envelope);
-        */
+            if (i >= envelope)
+                sine[i] = sine[i] * ((samples - i) / envelope);
+        }
     }
     player(sine, samples, isMIDI, data);
 }
@@ -78,6 +79,8 @@ void Synth::square(double freq, bool isMIDI, Midi data)
     //const short squareAMP = std::round(0.8 * 32767); 
     const int samples = SAMPLE_RATE;
     short square[SAMPLE_RATE];
+
+    std::cout << "RAMP" << data.ramp << std::endl;
 
     // Square Wave Oscillator
     for (int i = 0; i < samples; ++i)
@@ -90,15 +93,17 @@ void Synth::square(double freq, bool isMIDI, Midi data)
         else
             square[i] = squareAMP;
 
-        /*
-        double envelope = ramp * samples;
+        //if (data.ramp > 0.0f && data.ramp <= 0.5f)
+        if(data.ramp >= 0.001f)
+        {
+            double envelope = data.ramp * samples;
 
-        if(i < envelope)
-            square[i] = square[i] * (i / envelope);
+            if (i < envelope)
+                square[i] = square[i] * (i / envelope);
 
-        if(i >= envelope)
-            square[i] = square[i] * ((samples - i) / envelope);
-        */
+            if (i >= envelope)
+                square[i] = square[i] * ((samples - i) / envelope);
+        }
     }
     player(square, samples, isMIDI, data);
 }
@@ -116,8 +121,18 @@ void Synth::saw(double freq, bool isMIDI, Midi data)
             saw[i] += (sine - 0);
         else
             saw[i] = 0;
-    }
 
+        if (data.ramp >= 0.001f)
+        {
+            double envelope = data.ramp * samples;
+
+            if (i < envelope)
+                saw[i] = saw[i] * (i / envelope);
+
+            if (i >= envelope)
+                saw[i] = saw[i] * ((samples - i) / envelope);
+        }
+    }
     player(saw, samples, isMIDI, data);
 }
 
@@ -134,8 +149,18 @@ void Synth::triangle(double freq, bool isMIDI, Midi data)
             triangle[i] += sine;
         else
             triangle[i] -= sine;
-    }
 
+        if (data.ramp >= 0.001f)
+        {
+            double envelope = data.ramp * samples;
+
+            if (i < envelope)
+                triangle[i] = triangle[i] * (i / envelope);
+
+            if (i >= envelope)
+                triangle[i] = triangle[i] * ((samples - i) / envelope);
+        }
+    }
     player(triangle, samples, isMIDI, data);
 }
 
@@ -157,8 +182,6 @@ void Synth::noise(double freq, bool isMIDI, Midi data)
 
 void Synth::listener(Midi data)
 {
-    //HighlightKey(70, true);
-
     double freq;
 
     inputMIDI = new RtMidiIn();
@@ -167,9 +190,12 @@ void Synth::listener(Midi data)
     if (nPorts == 0)
     {
         std::cout << "No ports detected!\n";
+        IsMidiConnected(false);
         delete inputMIDI;
         return;
     }
+
+    IsMidiConnected(true);
 
     inputMIDI->openPort(0);
 
@@ -196,11 +222,7 @@ void Synth::listener(Midi data)
                     case waveEnum::saw: Synth::saw(freq, true, data); break;
                     case waveEnum::triangle: Synth::triangle(freq, true, data); break;
                     case waveEnum::square: Synth::square(freq, true, data); break;
-                    case whiteNoise:
-                {
-                    Synth::noise(freq, true, data);
-                    break;
-                }
+                    case whiteNoise: Synth::noise(freq, true, data);  break;
                     default: break;
                 }
                 std::cout << "OUT" << std::endl;

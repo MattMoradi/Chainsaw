@@ -3,7 +3,8 @@
 #include<vector>
 const int NUM_KEYS = 37;
 
-void HighlightKey(int midiKey, bool highlight); 
+void IsMidiConnected(bool connected);
+void HighlightKey(int midiKey, bool highlight);
 
 enum waveEnum { sine, saw, triangle, square, whiteNoise };
 
