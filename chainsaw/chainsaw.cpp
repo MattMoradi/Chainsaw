@@ -139,8 +139,7 @@ bool ClickedKey(vector<sf::RectangleShape>& rectangles, sf::Event& event)
 			}
 			case whiteNoise:
 			{
-				cout << "white noise not implemented!\n";
-				//Synth::whiteNoise(freq,false,midi);
+				Synth::noise(freq,false,midi);
 				break;
 			}
 			default:
