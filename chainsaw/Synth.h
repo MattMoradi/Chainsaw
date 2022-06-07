@@ -14,7 +14,6 @@ struct Midi
 	int midiNoteNumber = 60; // 21 - 115
 	float bpm = 60.0f; // 0 - sizeof(float)
 	std::vector<int> midiRectValues; // holds the midi key value for each rectangle
-
 };
 
 class Synth
