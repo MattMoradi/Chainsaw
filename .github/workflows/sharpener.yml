@@ -19,8 +19,6 @@ jobs:
       run: wget -P chainsaw/ https://raw.githubusercontent.com/thestk/rtmidi/master/RtMidi.h
     - name: SFML
       run: sudo apt-get install libsfml-dev
-    - name: configure
-      run: ./configure
     - name: make
       run: make
     - name: make check
