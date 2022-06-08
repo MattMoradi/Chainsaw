@@ -1,0 +1,21 @@
+name: Chainsaw Integration (CI)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: RtMidi.cpp
+      run: wget -P chainsaw/ https://raw.githubusercontent.com/thestk/rtmidi/master/RtMidi.cpp
+    - name: RtMidi.h
+      run: wget -P chainsaw/ https://raw.githubusercontent.com/thestk/rtmidi/master/RtMidi.h
+    - name: SFML
+      run: sudo apt-get install libsfml-dev
+    - name: make
+      run: make
