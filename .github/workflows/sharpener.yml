@@ -13,8 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    -name: install dependencies
-     run:  |
+    - name: install dependencies
+      run:  |
       wget -P chainsaw/ https://raw.githubusercontent.com/thestk/rtmidi/master/RtMidi.cpp
       wget -P chainsaw/ https://raw.githubusercontent.com/thestk/rtmidi/master/RtMidi.h
       sudo apt-get install libsfml-dev
