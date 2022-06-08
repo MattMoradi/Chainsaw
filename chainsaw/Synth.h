@@ -1,7 +1,6 @@
 #include <iostream>
 #include<SFML/Window/Mouse.hpp>
 #include<vector>
-const int NUM_KEYS = 37;
 
 void IsMidiConnected(bool connected);
 void HighlightKey(int midiKey, bool highlight);

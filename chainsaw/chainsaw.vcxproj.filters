@@ -21,7 +21,10 @@
     <ClCompile Include="Synth.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Desktop\RtMidi.cpp">
+    <ClCompile Include="..\..\..\..\Desktop\Chainsaw depends\include\RtMidi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,7 +32,10 @@
     <ClInclude Include="Synth.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\RtMidi.h">
+    <ClInclude Include="..\..\..\..\Desktop\Chainsaw depends\include\RtMidi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
