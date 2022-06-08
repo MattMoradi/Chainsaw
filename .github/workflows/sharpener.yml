@@ -13,11 +13,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: install dependencies
-      run:  |
-      wget -P chainsaw/ https://raw.githubusercontent.com/thestk/rtmidi/master/RtMidi.cpp
-      wget -P chainsaw/ https://raw.githubusercontent.com/thestk/rtmidi/master/RtMidi.h
-      sudo apt-get install libsfml-dev
+    - name: RtMidi.cpp
+      run: wget -P chainsaw/ https://raw.githubusercontent.com/thestk/rtmidi/master/RtMidi.cpp
+    - name: RtMidi.h
+      run: wget -P chainsaw/ https://raw.githubusercontent.com/thestk/rtmidi/master/RtMidi.h
+    - name: SFML
+      run: sudo apt-get install libsfml-dev
     - name: configure
       run: ./configure
     - name: make
